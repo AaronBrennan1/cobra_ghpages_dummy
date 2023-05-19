@@ -30,6 +30,8 @@ def update_index_html(section, file_name, heading):
     with open('stable/tutorials/index.html', 'r') as f:
         index_soup = BeautifulSoup(f, 'html.parser')
 
+    if section == "dataIntegration":
+        section = "data-integration"
     section_div = index_soup.find('div', {'id': section})
 
     if section_div:
