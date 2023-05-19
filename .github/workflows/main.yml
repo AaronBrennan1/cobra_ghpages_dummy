@@ -2,7 +2,7 @@ name: Extract HTML Info
 
 on:
   push:
-    branches: [ gh-pages ]
+    branches: [ gh_pages ]
     paths:
     - '**.html'
 
