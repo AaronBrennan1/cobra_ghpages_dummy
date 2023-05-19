@@ -2,7 +2,7 @@ name: Extract HTML Info
 
 on:
   push:
-    branches: [ gh_pages ]
+    branches: [ gh-pages ]
     paths:
     - '**.html'
 
@@ -60,4 +60,4 @@ jobs:
           git config user.email "action@github.com"
           git add .
           git commit -m "Add new HTML file" || echo "No changes to commit"
-          git push -f origin gh_pages
+          git push -f origin gh-pages
