@@ -30,7 +30,7 @@ def main():
     template = template.replace('IFRAMETUTORIAL.html', new_file_location)
 
     # Create a new file with the same name as the changed file in the stable/tutorials directory
-    new_file_name = file_path.split('/')[-1]
+    new_file_name = "tutorial" + file_path.split('/')[-1]
     new_file_path = f'stable/tutorials/{new_file_name}'
 
     # Write the modified template to the new file
