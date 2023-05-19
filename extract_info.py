@@ -1,43 +1,65 @@
-import sys
+import re
 import os
 from bs4 import BeautifulSoup
-import shutil
+
+def get_file_info(file_path):
+    with open(file_path, 'r', encoding='utf8') as f:
+        html_content = f.read()
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        # File location
+        print(f'File Location: {file_path}')
+
+        # Heading
+        heading_tag = soup.find('h1')
+        if heading_tag:
+            print(f'Heading: {heading_tag.text}')
+
+        # Modify and create a copy of HOLDER_TEMPLATE.html
+        with open('stable/tutorials/HOLDER_TEMPLATE.html', 'r') as template_file:
+            template_content = template_file.read()
+            template_content = template_content.replace('IFRAMETUTORIAL.html', file_path[18:])  # Remove the first 2 directories from the file location
+
+            new_file_path = os.path.join('stable/tutorials', "tutorial"+os.path.basename(file_path))
+            with open(new_file_path, 'w') as new_file:
+                new_file.write(template_content)
+
+        return heading_tag.text if heading_tag else None
+
+def update_index_html(section, file_name, heading):
+    with open('stable/tutorials/index.html', 'r') as f:
+        index_soup = BeautifulSoup(f, 'html.parser')
+
+    section_div = index_soup.find('div', {'id': section})
+
+    if section_div:
+        ul = section_div.find('ul', {'class': 'simple'})
+        if ul:
+            new_li = index_soup.new_tag('li')
+            new_a = index_soup.new_tag('a', href=file_name)
+            new_span = index_soup.new_tag('span', **{'class': 'doc'})
+            new_span.string = heading
+            new_a.append(new_span)
+            new_li.append(new_a)
+            ul.append(new_li)
+
+    with open('stable/tutorials/index.html', 'w') as f:
+        f.write(str(index_soup.prettify()))
 
 def main():
-    # Get file path from command line argument
-    file_path = sys.argv[1]
+    # Fetch file path from command line argument
+    file_path = os.sys.argv[1]
 
-    # Open the file and parse it with Beautiful Soup
-    with open(file_path, 'r') as file:
-        soup = BeautifulSoup(file, 'html.parser')
+    # Section will be the first directory in the file path
+    section = file_path.split('/')[2]
 
-    # Print the file location
-    print(f"File Location: {file_path}")
+    # Get information from the file and update HOLDER_TEMPLATE.html
+    heading = get_file_info(file_path)
 
-    # Find the h1 span tag and print its contents
-    heading = soup.find('h1').find('span').text
-    print(f"Heading: {heading}")
+    # Update index.html
+    update_index_html(section, "tutorial"+os.path.basename(file_path), heading)
 
-    # Compute the new file location by removing the first two directories
-    new_file_location = '/'.join(file_path.split('/')[2:])
-    print(f"New File Location: {new_file_location}")
-
-    # Read the HOLDER_TEMPLATE.html file
-    with open('stable/tutorials/HOLDER_TEMPLATE.html', 'r') as template_file:
-        template = template_file.read()
-
-    # Replace the placeholder string with the new file location
-    template = template.replace('IFRAMETUTORIAL.html', new_file_location)
-
-    # Create a new file with the same name as the changed file in the stable/tutorials directory
-    new_file_name = file_path.split('/')[-1]
-    new_file_path = f'stable/tutorials/{new_file_name}'
-
-    # Write the modified template to the new file
-    with open(new_file_path, 'w') as new_file:
-        new_file.write(template)
-
-    print(f"Created new file: {new_file_path}")
+    print('Process completed.')
 
 if __name__ == "__main__":
     main()
