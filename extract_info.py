@@ -18,7 +18,7 @@ def get_file_info(file_path):
         # Modify and create a copy of HOLDER_TEMPLATE.html
         with open('stable/tutorials/HOLDER_TEMPLATE.html', 'r') as template_file:
             template_content = template_file.read()
-            template_content = template_content.replace('IFRAMETUTORIAL.html', file_path[18:])  # Remove the first 2 directories from the file location
+            template_content = template_content.replace('IFRAMETUTORIAL.html', file_path[17:])  # Remove the first 2 directories from the file location
 
             new_file_path = os.path.join('stable/tutorials', "tutorial"+os.path.basename(file_path))
             with open(new_file_path, 'w') as new_file:
